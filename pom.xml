@@ -11,13 +11,13 @@
 
 
     <modules>
-        <module>gulimall_coupon</module>
-        <module>gulimall_member</module>
-        <module>gulimall_order</module>
-        <module>gulimall_product</module>
-        <module>gulimall_ware</module>
+        <module>gulimall-coupon</module>
+        <module>gulimall-member</module>
+        <module>gulimall-order</module>
+        <module>gulimall-product</module>
+        <module>gulimall-ware</module>
         <module>renren-fast</module>
         <module>renren-generator</module>
-        <module>gulimall_common</module>
+        <module>gulimall-common</module>
     </modules>
 </project>
