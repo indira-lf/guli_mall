@@ -1,6 +1,7 @@
 package com.indiralf.guli_mall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.indiralf.guli_mall.product.service.CategoryService;
@@ -31,14 +32,15 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 列表
+     * 2021-11-28
+     * 查询所有分类以及子分类，以树形结构组装起来
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list/tree")
     //@RequiresPermissions("product:category:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = categoryService.queryPage(params);
+        List<CategoryEntity> entities = categoryService.listWithTree();
 
-        return R.ok().put("page", page);
+        return R.ok().put("data", entities);
     }
 
 
