@@ -13,6 +13,11 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *          配置Mybatis—plus
  *              使用 @MapperScan
  *              告诉myBatis映射文件位置 yml文件配置
+ *
+ * JSR303
+ *  1)、给Bean添加校验注解 javax.validation.constraints,并定义自己的message提示
+ *  2)、开启校验功能@Valid
+ *
  */
 @MapperScan("com.indiralf.guli_mall.product.dao")
 @SpringBootApplication
