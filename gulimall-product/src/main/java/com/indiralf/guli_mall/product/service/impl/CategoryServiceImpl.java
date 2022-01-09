@@ -5,6 +5,8 @@ import com.indiralf.guli_mall.product.entity.CategoryEntity;
 import com.indiralf.guli_mall.product.service.CategoryService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -64,6 +66,26 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         //逻辑删除
         baseMapper.deleteBatchIds(asList);
+    }
+
+    @Override
+    public Long[] findCatelogPath(Long catelogId) {
+        List<Long> paths = new ArrayList<>();
+        List<Long> parentPath = findParentPath(catelogId, paths);
+
+        Collections.reverse(parentPath);
+
+        return  parentPath.toArray(new Long[parentPath.size()]);
+    }
+
+    private List<Long> findParentPath(Long catelogId,List<Long> paths){
+        //1、收集当前节点id
+        paths.add(catelogId);
+        CategoryEntity byId = this.getById(catelogId);
+        if (byId.getParentCid() != 0){
+            findParentPath(byId.getParentCid(),paths);
+        }
+        return paths;
     }
 
     /**
