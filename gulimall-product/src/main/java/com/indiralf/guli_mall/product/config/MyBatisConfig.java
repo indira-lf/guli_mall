@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @Description- TODO
  */
 @Configuration
-@EnableTransactionManagement //开启使用
+@EnableTransactionManagement //开启事务
 @MapperScan("com.indiralf.guli_mall.product.dao")
 public class MyBatisConfig {
 
