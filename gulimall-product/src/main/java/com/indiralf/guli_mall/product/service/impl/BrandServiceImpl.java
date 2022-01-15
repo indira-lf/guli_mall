@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.indiralf.common.utils.PageUtils;
 import com.indiralf.common.utils.Query;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 
@@ -37,6 +38,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
         return new PageUtils(page);
     }
 
+    @Transactional
     @Override
     public void updateDetail(BrandEntity brand) {
         //保证冗余字段的数据一致
