@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.indiralf.guli_mall.product.service.AttrService;
+import com.indiralf.guli_mall.product.vo.AttrGroupRelationVo;
 import com.indiralf.guli_mall.product.vo.AttrRespVo;
 import com.indiralf.guli_mall.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,12 @@ public class AttrController {
     /**
      * 列表
      */
-    @GetMapping("/base/list/{catelogId}")
+    @GetMapping("/{attrType}/list/{catelogId}")
     //@RequiresPermissions("product:attr:list")
     public R baseAttrList(@RequestParam Map<String, Object> params,
-                          @PathVariable("catelogId") Long catelogId){
-        PageUtils page = attrService.queryBaseAttrPage(params,catelogId);
+                          @PathVariable("catelogId") Long catelogId,
+                          @PathVariable("attrType") String type){
+        PageUtils page = attrService.queryBaseAttrPage(params,catelogId,type);
 
         return R.ok().put("page", page);
     }
