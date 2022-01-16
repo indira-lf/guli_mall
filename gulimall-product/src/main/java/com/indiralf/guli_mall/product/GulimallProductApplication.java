@@ -4,6 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 1、整合MyBatis-Plus
@@ -19,6 +20,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  *  2)、开启校验功能@Valid
  *
  */
+@EnableFeignClients(basePackages = "com.indiralf.guli_mall.product.feign")
 @MapperScan("com.indiralf.guli_mall.product.dao")
 @SpringBootApplication
 @EnableDiscoveryClient

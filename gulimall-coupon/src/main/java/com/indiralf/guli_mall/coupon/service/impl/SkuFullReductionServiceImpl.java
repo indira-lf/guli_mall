@@ -1,5 +1,6 @@
 package com.indiralf.guli_mall.coupon.service.impl;
 
+import com.indiralf.common.to.SkuReductionTo;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,6 +25,11 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void saveSkuReduction(SkuReductionTo reductionTo) {
+        //TODO 1、保存满减打折，会员价
     }
 
 }
