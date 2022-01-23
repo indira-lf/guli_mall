@@ -1,10 +1,8 @@
-package com.indiralf.guli_mall.product.controller;
+package com.indiralf.guli_mall.ware.controller;
 
 import java.util.Arrays;
 import java.util.Map;
 
-import com.indiralf.guli_mall.product.service.SpuInfoService;
-import com.indiralf.guli_mall.product.vo.SpuSaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,32 +10,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.indiralf.guli_mall.product.entity.SpuInfoEntity;
+import com.indiralf.guli_mall.ware.entity.WareOrderTaskEntity;
+import com.indiralf.guli_mall.ware.service.WareOrderTaskService;
 import com.indiralf.common.utils.PageUtils;
 import com.indiralf.common.utils.R;
 
 
 
 /**
- * spu信息
+ * 库存工作单
  *
  * @author indiralf
  * @email indiralf@163.com
- * @date 2021-10-31 16:50:21
+ * @date 2021-11-07 15:04:57
  */
 @RestController
-@RequestMapping("product/spuinfo")
-public class SpuInfoController {
+@RequestMapping("ware/wareordertask")
+public class WareOrderTaskController {
     @Autowired
-    private SpuInfoService spuInfoService;
+    private WareOrderTaskService wmsWareOrderTaskService;
 
     /**
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("product:spuinfo:list")
+    //@RequiresPermissions("ware:wmswareordertask:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = spuInfoService.queryPageByCondition(params);
+        PageUtils page = wmsWareOrderTaskService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -47,20 +46,20 @@ public class SpuInfoController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    //@RequiresPermissions("product:spuinfo:info")
+    //@RequiresPermissions("ware:wmswareordertask:info")
     public R info(@PathVariable("id") Long id){
-		SpuInfoEntity spuInfo = spuInfoService.getById(id);
+		WareOrderTaskEntity wmsWareOrderTask = wmsWareOrderTaskService.getById(id);
 
-        return R.ok().put("spuInfo", spuInfo);
+        return R.ok().put("wmsWareOrderTask", wmsWareOrderTask);
     }
 
     /**
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("product:spuinfo:save")
-    public R save(@RequestBody SpuSaveVo vo){
-		spuInfoService.saveSpuInfo(vo);
+    //@RequiresPermissions("ware:wmswareordertask:save")
+    public R save(@RequestBody WareOrderTaskEntity wmsWareOrderTask){
+		wmsWareOrderTaskService.save(wmsWareOrderTask);
 
         return R.ok();
     }
@@ -69,9 +68,9 @@ public class SpuInfoController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("product:spuinfo:update")
-    public R update(@RequestBody SpuInfoEntity spuInfo){
-		spuInfoService.updateById(spuInfo);
+    //@RequiresPermissions("ware:wmswareordertask:update")
+    public R update(@RequestBody WareOrderTaskEntity wmsWareOrderTask){
+		wmsWareOrderTaskService.updateById(wmsWareOrderTask);
 
         return R.ok();
     }
@@ -80,9 +79,9 @@ public class SpuInfoController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("product:spuinfo:delete")
+    //@RequiresPermissions("ware:wmswareordertask:delete")
     public R delete(@RequestBody Long[] ids){
-		spuInfoService.removeByIds(Arrays.asList(ids));
+		wmsWareOrderTaskService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }
