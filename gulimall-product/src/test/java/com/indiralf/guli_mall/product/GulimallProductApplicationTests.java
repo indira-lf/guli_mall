@@ -1,7 +1,6 @@
 package com.indiralf.guli_mall.product;
 
 import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
 import com.indiralf.guli_mall.product.service.BrandService;
 import com.indiralf.guli_mall.product.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;

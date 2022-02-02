@@ -2,6 +2,7 @@ package com.indiralf.guli_mall.product.service.impl;
 
 import com.indiralf.common.to.SkuReductionTo;
 import com.indiralf.common.to.SpuBoundTo;
+import com.indiralf.common.to.es.SkuEsModel;
 import com.indiralf.common.utils.R;
 import com.indiralf.guli_mall.product.dao.SpuInfoDao;
 import com.indiralf.guli_mall.product.entity.*;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,6 +54,12 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Autowired
     CouponFeignService couponFeignService;
+
+    @Autowired
+    BrandService brandService;
+
+    @Autowired
+    CategoryService categoryService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -216,6 +224,32 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         );
 
         return new PageUtils(page);
+    }
+
+    /**
+     * 商品上架
+     * @param spuId
+     */
+    @Override
+    public void up(Long spuId) {
+
+        //1、组装需要的数据
+        //1.1 查询当前spuId对应的所有sku信息
+        List<SkuInfoEntity> skuInfoEntities = skuInfoService.getSkusBySpuId(spuId);
+        //1.2 封装每个sku信息
+        List<SkuEsModel> collect = skuInfoEntities.stream().map(skuInfoEntity -> {
+            SkuEsModel esModel = new SkuEsModel();
+            BeanUtils.copyProperties(skuInfoEntity,esModel);
+            esModel.setSkuPrice(skuInfoEntity.getPrice());
+            esModel.setSkuImg(skuInfoEntity.getSkuDefaultImg());
+            BrandEntity brand = brandService.getById(esModel.getBrandId());
+            esModel.setBrandName(brand.getName());
+            esModel.setBrandImg(brand.getLogo());
+            CategoryEntity category = categoryService.getById(esModel.getCatalogId());
+            esModel.setCatalogName(category.getName());
+
+            return esModel;
+        }).collect(Collectors.toList());
     }
 
 }
