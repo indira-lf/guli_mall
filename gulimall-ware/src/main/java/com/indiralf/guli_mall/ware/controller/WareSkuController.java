@@ -1,14 +1,12 @@
 package com.indiralf.guli_mall.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.indiralf.common.to.SkuHasStockVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.indiralf.guli_mall.ware.entity.WareSkuEntity;
 import com.indiralf.guli_mall.ware.service.WareSkuService;
@@ -28,7 +26,18 @@ import com.indiralf.common.utils.R;
 @RequestMapping("ware/waresku")
 public class WareSkuController {
     @Autowired
-    private WareSkuService wmsWareSkuService;
+    private WareSkuService wareSkuService;
+
+    /**
+     * 查询是否有库存
+     */
+    @PostMapping("/hasstock")
+    public R<List<SkuHasStockVo>> getSkuHasStock(@RequestBody List<Long> skuIds){
+        List<SkuHasStockVo> vos  = wareSkuService.getSkuHasStock(skuIds);
+        R<List<SkuHasStockVo>> ok = R.ok();
+        ok.setData(vos);
+        return ok;
+    }
 
     /**
      * 列表
@@ -36,7 +45,7 @@ public class WareSkuController {
     @RequestMapping("/list")
     //@RequiresPermissions("ware:wmswaresku:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = wmsWareSkuService.queryPage(params);
+        PageUtils page = wareSkuService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -48,7 +57,7 @@ public class WareSkuController {
     @RequestMapping("/info/{id}")
     //@RequiresPermissions("ware:wmswaresku:info")
     public R info(@PathVariable("id") Long id){
-		WareSkuEntity wmsWareSku = wmsWareSkuService.getById(id);
+		WareSkuEntity wmsWareSku = wareSkuService.getById(id);
 
         return R.ok().put("wmsWareSku", wmsWareSku);
     }
@@ -59,7 +68,7 @@ public class WareSkuController {
     @RequestMapping("/save")
     //@RequiresPermissions("ware:wmswaresku:save")
     public R save(@RequestBody WareSkuEntity wmsWareSku){
-		wmsWareSkuService.save(wmsWareSku);
+		wareSkuService.save(wmsWareSku);
 
         return R.ok();
     }
@@ -70,7 +79,7 @@ public class WareSkuController {
     @RequestMapping("/update")
     //@RequiresPermissions("ware:wmswaresku:update")
     public R update(@RequestBody WareSkuEntity wmsWareSku){
-		wmsWareSkuService.updateById(wmsWareSku);
+		wareSkuService.updateById(wmsWareSku);
 
         return R.ok();
     }
@@ -81,7 +90,7 @@ public class WareSkuController {
     @RequestMapping("/delete")
     //@RequiresPermissions("ware:wmswaresku:delete")
     public R delete(@RequestBody Long[] ids){
-		wmsWareSkuService.removeByIds(Arrays.asList(ids));
+		wareSkuService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }
