@@ -23,7 +23,11 @@ public enum BizCodeEnume {
     /**
      * 参数格式校验失败
      */
-    VALID_EXCEmPTION(10001,"参数格式校验失败");
+    VALID_EXCEmPTION(10001,"参数格式校验失败"),
+    /**
+     * 商品上架异常
+     */
+    PRODUCT_UP_EXCEPTION(11000,"商品上架异常");
 
     private int code;
     private String msg;

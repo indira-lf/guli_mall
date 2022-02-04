@@ -1,5 +1,7 @@
 package com.indiralf.guli_mall.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.indiralf.common.constant.ProductConstant;
 import com.indiralf.common.to.SkuHasStockVo;
 import com.indiralf.common.to.SkuReductionTo;
 import com.indiralf.common.to.SpuBoundTo;
@@ -8,6 +10,7 @@ import com.indiralf.common.utils.R;
 import com.indiralf.guli_mall.product.dao.SpuInfoDao;
 import com.indiralf.guli_mall.product.entity.*;
 import com.indiralf.guli_mall.product.feign.CouponFeignService;
+import com.indiralf.guli_mall.product.feign.SearchFeignService;
 import com.indiralf.guli_mall.product.feign.WareFeignService;
 import com.indiralf.guli_mall.product.service.*;
 import com.indiralf.guli_mall.product.vo.*;
@@ -66,6 +69,9 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Autowired
     WareFeignService wareFeignService;
+
+    @Autowired
+    SearchFeignService searchFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -264,15 +270,17 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         Map<Long, Boolean> stockMap = null;
         try {
 
-            R<List<SkuHasStockVo>> skuHasStock = wareFeignService.getSkuHasStock(skuIdList);
-            stockMap = skuHasStock.getData().stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, item -> item.getHasStock()));
+            R skuHasStock = wareFeignService.getSkuHasStock(skuIdList);
+            TypeReference<List<SkuHasStockVo>> typeReference = new TypeReference<List<SkuHasStockVo>>() {
+            };
+            stockMap = skuHasStock.getData(typeReference).stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, item -> item.getHasStock()));
         }catch (Exception e){
             log.error("库存服务查询异常:原因{}",e);
         }
 
         //1.2 封装每个sku信息
         Map<Long, Boolean> finalStockMap = stockMap;
-        List<SkuEsModel> collect = skuInfoEntities.stream().map(skuInfoEntity -> {
+        List<SkuEsModel> upProducts = skuInfoEntities.stream().map(skuInfoEntity -> {
             SkuEsModel esModel = new SkuEsModel();
             BeanUtils.copyProperties(skuInfoEntity,esModel);
             esModel.setSkuPrice(skuInfoEntity.getPrice());
@@ -297,6 +305,21 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
             return esModel;
         }).collect(Collectors.toList());
+
+        //将数据发送给es进行保存
+        R r = searchFeignService.productStatusUp(upProducts);
+        if (r.getCode() == 0){
+            //修改spu状态
+            baseMapper.updateSpuStatus(spuId, ProductConstant.StatusEnum.SPU_UP.getCode());
+        }else {
+            //TODO 重复调用？接口幂等性
+            /**
+             * Feign的调用流程
+             *  1、构造请求数据，转换成json
+             *  2、发送请求进行执行(执行成功会解码响应数据)
+             *  3、执行请求会有重试机制
+             */
+        }
     }
 
 }
