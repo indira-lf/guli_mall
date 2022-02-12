@@ -1,17 +1,22 @@
 package com.indiralf.guli_mall.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.indiralf.guli_mall.product.dao.CategoryDao;
 import com.indiralf.guli_mall.product.entity.CategoryEntity;
 import com.indiralf.guli_mall.product.service.CategoryBrandRelationService;
 import com.indiralf.guli_mall.product.service.CategoryService;
 import com.indiralf.guli_mall.product.vo.Catelog2Vo;
+import com.mysql.cj.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,6 +26,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.indiralf.common.utils.PageUtils;
 import com.indiralf.common.utils.Query;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 
 @Service("categoryService")
@@ -28,6 +34,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     CategoryBrandRelationService categoryBrandRelationService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -101,14 +110,65 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * 查询一级菜单
      * @return
      */
+    @Cacheable(value = {"category"},key = "#root.method.name") //代表当前方法的结果需要缓存，如果缓存中有，方法不用调用，如果缓存中没有，调方法并写入缓存
     @Override
     public List<CategoryEntity> getLevelOneCategorys() {
         List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
         return categoryEntities;
     }
 
+    /**
+     * 查询三级菜单
+     * //TODO 产生堆外内存溢出 OutOfDirectMemoryError
+     * @return
+     */
     @Override
-    public Map<String, List<Catelog2Vo>> getCatalogJson() {
+    public Map<String, List<Catelog2Vo>> getCatalogJson(){
+        /**
+         * 1、空结果缓存: 解决缓存穿透
+         * 2、设置过期时间(加随机值): 解决缓存雪崩
+         * 3、加锁: 解决缓存击穿
+         */
+            ValueOperations<String, String> operations = redisTemplate.opsForValue();
+            String catalogJSON = operations.get("catalogJSON");
+            //判断是否需要加入缓存
+            catalogJSON = addRedisCache(catalogJSON,operations);
+            Map<String, List<Catelog2Vo>> result = JSON.parseObject(catalogJSON,new TypeReference<Map<String, List<Catelog2Vo>>>(){});
+
+            return result;
+    }
+
+    public String addRedisCache(String catalogJSON,ValueOperations<String, String> operations){
+        if (StringUtils.isEmpty(catalogJSON)){
+            String uuid = UUID.randomUUID().toString();
+            Boolean lock = redisTemplate.opsForValue().setIfAbsent("lock", uuid,300,TimeUnit.SECONDS);
+            if (lock) {
+//                redisTemplate.expire("lock",30, TimeUnit.SECONDS);//设置过期时间
+                try {
+                    Map<String, List<Catelog2Vo>> catalogJsonFromDb = getCatalogJsonFromDb();
+                    catalogJSON = JSON.toJSONString(catalogJsonFromDb);
+                    if (!StringUtils.isEmpty(catalogJSON)) {
+                        operations.set("catalogJSON", catalogJSON, 1, TimeUnit.DAYS);
+                    }
+                }finally {
+                    String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+                    redisTemplate.execute(new DefaultRedisScript<>(script,Long.class),Arrays.asList("lock"),uuid);
+                }
+                //解锁
+//                String lock1 = operations.get("lock");
+//                if (lock1.equals(uuid)){
+//                    redisTemplate.delete("lock");
+//                }
+                //使用lua脚本
+            }else{
+                addRedisCache(catalogJSON,operations);
+            }
+        }
+        return catalogJSON;
+    }
+
+    //从数据库查询并封装分类数据
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDb() {
 
         //查询所有
         List<CategoryEntity> selectList = baseMapper.selectList(null);

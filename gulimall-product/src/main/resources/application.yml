@@ -18,7 +18,10 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
   thymeleaf:
-    cache: false
+    cache: true
+  redis:
+    host: 192.168.56.10
+    port: 6379
 #动静分离后，将静态资源放在nginx中
 #  mvc:
 #    static-path-pattern: /static/**

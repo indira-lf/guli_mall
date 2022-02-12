@@ -6,14 +6,18 @@ import com.indiralf.guli_mall.product.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.UUID;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -26,8 +30,14 @@ public class GulimallProductApplicationTests {
     @Autowired
     CategoryService categoryService;
 
+//    @Autowired
+//    OSS ossClient;
+
     @Autowired
-    OSS ossClient;
+    StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    RedissonClient redissonClient;
 
     //    @Autowired
 //    OSS ossClient;
@@ -46,6 +56,19 @@ public class GulimallProductApplicationTests {
 //    }
 
     @Test
+    public void testRedisson(){
+        System.out.println(redissonClient);
+    }
+
+    @Test
+    public void testRedis(){
+        ValueOperations<String, String> operations = stringRedisTemplate.opsForValue();
+        operations.set("hello","world_"+ UUID.randomUUID().toString());
+        String hello = operations.get("hello");
+        System.out.println(hello);
+    }
+
+    @Test
     public void testUpload() throws FileNotFoundException {
         // yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
 //        String endpoint = "oss-cn-shanghai.aliyuncs.com";
@@ -57,12 +80,12 @@ public class GulimallProductApplicationTests {
 //        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
 
 // 填写本地文件的完整路径。如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件流。
-        InputStream inputStream = new FileInputStream("E:\\14.jpg");
+//        InputStream inputStream = new FileInputStream("E:\\14.jpg");
 // 填写Bucket名称和Object完整路径。Object完整路径中不能包含Bucket名称。
-        ossClient.putObject("market-gulimall", "17.jpg", inputStream);
+//        ossClient.putObject("market-gulimall", "17.jpg", inputStream);
 
 // 关闭OSSClient。
-        ossClient.shutdown();
-        System.out.println("上传成功");
+//        ossClient.shutdown();
+//        System.out.println("上传成功");
     }
 }
