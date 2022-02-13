@@ -9,6 +9,7 @@ import com.indiralf.guli_mall.product.service.CategoryService;
 import com.indiralf.guli_mall.product.vo.Catelog2Vo;
 import com.mysql.cj.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -96,8 +97,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     /**
      * 级联更新所有关联的数据
+     * @CacheEvict 失效模式
      * @param category
      */
+    @CacheEvict(value = "category",key = "'getLevelOneCategorys'")
     @Transactional
     @Override
     public void updateCascade(CategoryEntity category) {
