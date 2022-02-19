@@ -1,6 +1,7 @@
 package com.indiralf.guli_mall.product.app;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.indiralf.common.valid.AddGroup;
@@ -9,11 +10,7 @@ import com.indiralf.common.valid.UpdateStatusGroup;
 import com.indiralf.guli_mall.product.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.indiralf.guli_mall.product.entity.BrandEntity;
 import com.indiralf.common.utils.PageUtils;
@@ -54,6 +51,13 @@ public class BrandController {
 		BrandEntity brand = brandService.getById(brandId);
 
         return R.ok().put("brand", brand);
+    }
+
+    @GetMapping("/infos")
+    public R info(@PathVariable("brandIds") List<Long> brandIds){
+        List<BrandEntity> brand = brandService.getBrandsByIds(brandIds);
+
+        return R.ok().put("brand",brand);
     }
 
     /**

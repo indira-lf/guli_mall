@@ -3,6 +3,7 @@ package com.indiralf.guli_mall.search.vo;
 import com.indiralf.common.to.es.SkuEsModel;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class SearchResult {
     /**
      * 商品信息
      */
-    private List<SkuEsModel> product;
+    private List<SkuEsModel> products;
     /**
      * 当前页码
      */
@@ -29,6 +30,8 @@ public class SearchResult {
      */
     private Integer totalPages;
 
+    private List<Integer> pageNavs;
+
     /**
      * 品牌
      */
@@ -41,6 +44,17 @@ public class SearchResult {
      * 分类
      */
     private List<CatalogVo> catalogs;
+
+    //==============面包屑导航数据==============
+    private List<NavVo> navs = new ArrayList<>();
+    private List<Long> attrIds = new ArrayList<>();
+
+    @Data
+    public static class NavVo{
+        private String navName;
+        private String navValue;
+        private String link;
+    }
 
     @Data
     public static class BrandVo{
