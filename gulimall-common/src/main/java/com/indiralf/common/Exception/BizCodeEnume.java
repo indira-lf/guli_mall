@@ -17,9 +17,13 @@ package com.indiralf.common.Exception;
  */
 public enum BizCodeEnume {
     /**
-     * 系统未知异常
+     * 短信验证码评率太高
      */
     UNKNOWN_EXCEPTION(10000,"系统未知异常"),
+    /**
+     * 系统未知异常
+     */
+    SMS_CODE_EXCEPTION(10002,"验证码获取评率太高，稍后再试"),
     /**
      * 参数格式校验失败
      */
