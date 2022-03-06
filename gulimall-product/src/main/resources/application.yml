@@ -9,10 +9,11 @@ spring:
     nacos:
       config:
         server-addr: 127.0.0.1:8848
-  jackson:
-    alicloud:
-      access-key: LTAI5tAFx7XuqqTQz1EpC4kp
-      secret-key: gy2NYIv6brR4DMi1z6QqLfpHitV0jY
+#本地路径E:\阿里云api秘钥
+#  jackson:
+#    alicloud:
+#      access-key:
+#      secret-key:
       oss:
         endpoint: oss-cn-shanghai.aliyuncs.com
     date-format: yyyy-MM-dd HH:mm:ss

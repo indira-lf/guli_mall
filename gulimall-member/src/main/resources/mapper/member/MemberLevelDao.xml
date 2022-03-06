@@ -16,6 +16,12 @@
         <result property="priviledgeBirthday" column="priviledge_birthday"/>
         <result property="note" column="note"/>
     </resultMap>
+    <sql id="UMSALL">
+
+    </sql>
+    <select id="getDefaultLevel" resultMap="memberLevelMap">
+        SELECT * FROM UMS_MEMBER_LEVEL WHERE DEFAULT_STATUS = 1
+    </select>
 
 
 </mapper>
