@@ -15,8 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+
+import static com.indiralf.common.constant.AuthServerConstant.LOGIN_USER;
 
 /**
  * @author
@@ -30,7 +34,7 @@ public class OAuth2Controller {
     MemberFeignService memberFeignService;
 
     @GetMapping("/oauth2.0/weibo/success")
-    public String weibo(@RequestParam("code") String code, HttpSession session) throws Exception {
+    public String weibo(@RequestParam("code") String code, HttpSession session, HttpServletResponse servletResponse) throws Exception {
 
         HashMap<String, String> map = new HashMap<>(16);
         map.put("client_id","2636917288");
@@ -49,8 +53,15 @@ public class OAuth2Controller {
             if (oauthLogin.getCode() == 0){
                 MemberRespVo data = oauthLogin.getData("data", new TypeReference<MemberRespVo>() {
                 });
-
-                session.setAttribute("loginUser",data);
+                /*
+                    第一次使用session；命令浏览器保存卡号。JSESSIONID这个cookie
+                    以后浏览器访问哪个网站就会带上这个网站的cookie
+                    子域之间：gulimall.com auth.gulimall.com ...
+                    发卡的时候指定域名为父域名，即使是子域系统发的卡，也能让父域直接使用
+                 */
+                //TODO 默认发的令牌。session=dsajkdjl。作用域：当前域；(解决子域session共享问题)
+                //TODO 使用JSON的序列化方式来序列化对象数据到redis中
+                session.setAttribute(LOGIN_USER,data);
                 return "redirect:http://gulimall.com";
             }else {
                 return "redirect:http://auth.gulimall.com/login.html";

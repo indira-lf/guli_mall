@@ -3,9 +3,9 @@ package com.indiralf.guli_mall.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
  * 1、整合MyBatis-Plus
@@ -31,6 +31,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *          4.2 修改完页面 ctrl+shift+F9重新自动编译页面
  *
  */
+@EnableRedisHttpSession
 @EnableFeignClients(basePackages = "com.indiralf.guli_mall.product.feign")
 @MapperScan("com.indiralf.guli_mall.product.dao")
 @SpringBootApplication

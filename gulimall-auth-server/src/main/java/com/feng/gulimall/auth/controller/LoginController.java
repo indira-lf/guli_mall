@@ -3,6 +3,7 @@ package com.feng.gulimall.auth.controller;
 import com.alibaba.fastjson.TypeReference;
 import com.feng.gulimall.auth.feign.MemberFeignService;
 import com.feng.gulimall.auth.feign.ThirdFeignService;
+import com.feng.gulimall.auth.vo.MemberRespVo;
 import com.feng.gulimall.auth.vo.UserLoginVo;
 import com.feng.gulimall.auth.vo.UserRegisterVo;
 import com.indiralf.common.Exception.BizCodeEnume;
@@ -21,12 +22,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.indiralf.common.constant.AuthServerConstant.LOGIN_USER;
 
 /**
  * @author
@@ -90,7 +94,7 @@ public class LoginController {
 
             //校验出错，转发到注册页
 //            return "forward:/reg.html";
-            return "redirect:http:auth.gulimall.com/reg.html";
+            return "redirect:http://auth.gulimall.com/reg.html";
         }
 
         //调用远程服务
@@ -105,24 +109,24 @@ public class LoginController {
                 R r = memberFeignService.register(vo);
                 if (r.getCode() == 0){
                     redisTemplate.delete(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
-                    return "redirect:http:auth.gulimall.com/login.html";
+                    return "redirect:http://auth.gulimall.com/login.html";
                 }else {
                     HashMap<String, String> errors = new HashMap<>(16);
                     errors.put("msg",r.getData("msg",new TypeReference<String>(){}));
                     redirectAttributes.addFlashAttribute("errors",errors);
-                    return "redirect:http:auth.gulimall.com/reg.html";
+                    return "redirect:http://auth.gulimall.com/reg.html";
                 }
             }else {
                 HashMap<String, String> errors = new HashMap<>(16);
                 errors.put("code","验证码错误");
                 redirectAttributes.addFlashAttribute("errors",errors);
-                return "redirect:http:auth.gulimall.com/reg.html";
+                return "redirect:http://auth.gulimall.com/reg.html";
             }
         }else {
             HashMap<String, String> errors = new HashMap<>(16);
             errors.put("code","验证码错误");
             redirectAttributes.addFlashAttribute("errors",errors);
-            return "redirect:http:auth.gulimall.com/reg.html";
+            return "redirect:http://auth.gulimall.com/reg.html";
         }
 
         //注册成功返回到首页
@@ -130,17 +134,30 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(UserLoginVo vo,RedirectAttributes redirectAttributes){
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes,
+                        HttpSession session){
 
         R login = memberFeignService.login(vo);
         if (login.getCode() == 0){
-            return "redirect:http:gulimall.com";
+            MemberRespVo data = login.getData("data", new TypeReference<MemberRespVo>() {
+            });
+            session.setAttribute(LOGIN_USER,data);
+            return "redirect:http://gulimall.com";
         }else {
             HashMap<String, String> errors = new HashMap<>(16);
             errors.put("msg",login.getData("msg",new TypeReference<String>(){}));
             redirectAttributes.addFlashAttribute("errors",errors);
-            return "redirect:http:auth.gulimall.com/login.html";
+            return "redirect:http://auth.gulimall.com/login.html";
         }
+    }
 
+    @GetMapping("login.html")
+    public String loginPage(HttpSession session){
+        Object attribute = session.getAttribute(LOGIN_USER);
+        if (attribute == null){
+            return "login";
+        }else {
+            return "redirect:http://gulimall.com";
+        }
     }
 }
