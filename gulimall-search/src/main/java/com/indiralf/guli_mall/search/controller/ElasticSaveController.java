@@ -1,6 +1,6 @@
 package com.indiralf.guli_mall.search.controller;
 
-import com.indiralf.common.Exception.BizCodeEnume;
+import com.indiralf.common.exception.BizCodeEnume;
 import com.indiralf.common.to.es.SkuEsModel;
 import com.indiralf.common.utils.R;
 import com.indiralf.guli_mall.search.service.ProductSaveService;

@@ -6,7 +6,7 @@ import com.feng.gulimall.auth.feign.ThirdFeignService;
 import com.feng.gulimall.auth.vo.MemberRespVo;
 import com.feng.gulimall.auth.vo.UserLoginVo;
 import com.feng.gulimall.auth.vo.UserRegisterVo;
-import com.indiralf.common.Exception.BizCodeEnume;
+import com.indiralf.common.exception.BizCodeEnume;
 import com.indiralf.common.constant.AuthServerConstant;
 import com.indiralf.common.constant.BizCodeConstant;
 import com.indiralf.common.utils.R;

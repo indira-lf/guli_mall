@@ -1,4 +1,4 @@
-package com.indiralf.common.Exception;
+package com.indiralf.common.exception;
 
 /**
  * @author
@@ -15,6 +15,7 @@ package com.indiralf.common.Exception;
  *      13: 购物车
  *      14: 物流
  *      15: 用户
+ *      21: 库存
  */
 public enum BizCodeEnume {
     /**
@@ -44,7 +45,11 @@ public enum BizCodeEnume {
     /**
      * 账号或密码错误
      */
-    LOGINACCT_PASSWORD_INVALID_EXCEPTION(15003,"账号或密码错误")
+    LOGINACCT_PASSWORD_INVALID_EXCEPTION(15003,"账号或密码错误"),
+    /**
+     * 商品库存不足
+     */
+    NO_STOCK_EXCEPTION(21000,"商品库存不足")
     ;
 
     private int code;

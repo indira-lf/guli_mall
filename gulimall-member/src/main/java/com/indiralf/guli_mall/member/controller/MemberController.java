@@ -3,7 +3,7 @@ package com.indiralf.guli_mall.member.controller;
 import java.util.Arrays;
 import java.util.Map;
 
-import com.indiralf.common.Exception.BizCodeEnume;
+import com.indiralf.common.exception.BizCodeEnume;
 import com.indiralf.guli_mall.member.exception.PhoneExistException;
 import com.indiralf.guli_mall.member.exception.UserNameExistException;
 import com.indiralf.guli_mall.member.feign.CouponFeignService;
