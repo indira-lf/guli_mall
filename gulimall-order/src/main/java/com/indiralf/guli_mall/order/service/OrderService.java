@@ -5,6 +5,7 @@ import com.indiralf.common.utils.PageUtils;
 import com.indiralf.guli_mall.order.entity.OrderEntity;
 import com.indiralf.guli_mall.order.vo.OrderConfirmVo;
 import com.indiralf.guli_mall.order.vo.OrderSubmitVo;
+import com.indiralf.guli_mall.order.vo.PayVo;
 import com.indiralf.guli_mall.order.vo.SubmitOrderResponseVo;
 
 import java.util.Map;
@@ -28,5 +29,8 @@ public interface OrderService extends IService<OrderEntity> {
     OrderEntity getOrderByOrderSn(String orderSn);
 
     void closeOrder(OrderEntity entity);
+
+    PayVo getOrderPay(String orderSn);
+
 }
 

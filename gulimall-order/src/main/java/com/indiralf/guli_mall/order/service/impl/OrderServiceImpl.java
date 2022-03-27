@@ -2,11 +2,9 @@ package com.indiralf.guli_mall.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import com.indiralf.common.exception.NoStockException;
 import com.indiralf.common.to.mq.OrderTo;
 import com.indiralf.common.utils.R;
 import com.indiralf.common.vo.MemberRespVo;
-import com.indiralf.guli_mall.order.dao.OrderItemDao;
 import com.indiralf.guli_mall.order.entity.OrderItemEntity;
 import com.indiralf.guli_mall.order.enume.OrderStatusEnum;
 import com.indiralf.guli_mall.order.feign.CartFeignService;
@@ -207,6 +205,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             BeanUtils.copyProperties(orderEntity,orderTo);
             rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
         }
+    }
+
+    @Override
+    public PayVo getOrderPay(String orderSn) {
+        PayVo payVo = new PayVo();
+        OrderEntity order = this.getOrderByOrderSn(orderSn);
+        BigDecimal decimal = order.getPayAmount().setScale(2, BigDecimal.ROUND_UP);
+        payVo.setTotal_amount(decimal.toString());
+        payVo.setOut_trade_no(order.getOrderSn());
+        payVo.setSubject("商品支付");
+        return payVo;
     }
 
     private void saveOrder(OrderCreatTo order) {
